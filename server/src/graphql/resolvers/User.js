@@ -1,4 +1,4 @@
-import { getUser } from '../../helpers';
+import { getUser, getCompany } from '../../helpers';
 
 // todo: 5. it would be nicer to return a base62 value for the id field instead of a base16 uuid.
 // ideally this would be implemented without changing the underlaying data, in a reusable way.
@@ -16,5 +16,14 @@ export default {
     }
 
     return friends;
+  },
+  company: async (root, args, { ctx }, info) => {
+    let company;
+    if (root.company) {
+      // lets turn that into actual user data.
+      company = getCompany(root.company);
+    }
+
+    return company;
   }
 };
