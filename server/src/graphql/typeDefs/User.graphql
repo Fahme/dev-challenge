@@ -5,6 +5,9 @@ A User of our platform.
 // todo: 1. would be awesome to include the Address type so we can return users Address info.
 // todo: 3. adding in a Company field to return the Users full company data would be great.  This will require adding a resolver as well.
 """
+
+# import Company from './Company.graphql
+
 type User {
   id: ID!
   image: String!
@@ -12,4 +15,5 @@ type User {
   email: String
   color: Color
   friends: [User!]
+  company: Company
 }
