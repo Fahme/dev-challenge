@@ -8,6 +8,23 @@ A User of our platform.
 
 # import Company from './Company.graphql
 
+type Address {  
+  zipCode: String
+  city: String
+  cityPrefix: String
+  citySuffix: String
+  streetName: String
+  streetAddress: String
+  streetSuffix: String
+  streetPrefix: String
+  secondaryAddress: String
+  county: String
+  country: String
+  state: String
+  latitude: String
+  longitude: String
+}
+
 type User {
   id: ID!
   image: String!
@@ -16,4 +33,5 @@ type User {
   color: Color
   friends: [User!]
   company: Company
+  address: Address
 }
