@@ -1,4 +1,7 @@
-export getCompany from './getCompany';
-export getUser from './getUser';
-export setCompany from './setCompany';
-export setUser from './setUser';
+import getCompany from './getCompany';
+import getUser from './getUser';
+import getUsers from './getUsers';
+import setCompany from './setCompany';
+import setUser from './setUser';
+
+export { getCompany, getUser, getUsers, setCompany, setUser };
