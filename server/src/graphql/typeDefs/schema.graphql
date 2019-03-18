@@ -1,6 +1,15 @@
+input FilterInput {
+  where: FilterOptions
+}
+
+input FilterOptions {
+  name: String
+}
+
+
 type Query {
   user(id: ID!): User!
-  users: [User!]
+  users(filter: FilterInput): [User!]
   company(id: ID!): Company!
   companies: [Company!]
 }
