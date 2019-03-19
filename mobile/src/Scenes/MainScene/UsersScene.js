@@ -57,6 +57,7 @@ export default class UsersScene extends PureComponent {
                     <UserList user={item} />
                   </TouchableOpacity>
                 )}
+                keyExtractor={item => item.id}
               />
             );
           }}
