@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   Image,
   Button,
-  ScrollView
+  ScrollView,
+  TextInput
 } from 'react-native';
 
 import { Query } from 'react-apollo';
@@ -53,6 +54,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 10
+  },
+  input: {
+    padding: 10,
+    paddingHorizontal: 20,
+    fontSize: 16,
+    color: '#444',
+    borderBottomWidth: 1,
+    borderColor: '#ddd',
+    backgroundColor: '#F5F5F5'
   }
 });
 
@@ -94,10 +104,55 @@ const query = gql`
 `;
 
 export default class UserScene extends PureComponent {
+  static getDerivedStateFromProps(props, state) {
+    console.log('props: ', props);
+    console.log(state);
+    const {
+      navigation: {
+        state: {
+          params: { name, email }
+        }
+      }
+    } = props;
+
+    if (name !== state.name) {
+      return {
+        name
+      };
+    }
+
+    if (email !== state.email) {
+      return {
+        email
+      };
+    }
+
+    return state;
+  }
+
+  state = {
+    editable: false,
+    name: null,
+    email: null
+  };
+
+  // componentDidMount() {
+  //   console.log(this.props);
+  //   const {
+  //     navigation: {
+  //       state: { name, email }
+  //     }
+  //   } = this.props;
+
+  //   this.setState({ name, email });
+  // }
+
   render() {
+    debugger;
+    const { editable, name, email } = this.state;
     const { navigation } = this.props;
     const id = navigation.getParam('id');
-    const company = navigation.getParam('company');
+    console.log(name, email, editable);
 
     // todo: 2. would be cool if we actually displayed full user data that is contained in the user data object.
 
@@ -126,16 +181,64 @@ export default class UserScene extends PureComponent {
                       { backgroundColor: data.user.color }
                     ]}
                   >
-                    <Text style={[styles.header]}>{data.user.name}</Text>
+                    {editable ? (
+                      <TextInput
+                        style={[
+                          styles.input,
+                          styles.header,
+                          { color: data.user.color }
+                        ]}
+                        defaultValue={name}
+                        onChangeText={text => this.setState({ name: text })}
+                      />
+                    ) : (
+                      <Text style={[styles.header]}>{data.user.name}</Text>
+                    )}
                     <View style={styles.displayContainer}>
                       <Image
                         style={[styles.display, { width: 50, height: 50 }]}
                         source={{ uri: data.user.image }}
                       />
                     </View>
+                    {editable ? (
+                      <Button
+                        style={{ width: 200 }}
+                        color={data.user.color}
+                        accessibilityLabel="Click here to update a user's information"
+                        onPress={() => this.setState({ editable: false })}
+                        title="Update User"
+                      />
+                    ) : (
+                      <Button
+                        style={{ width: 200 }}
+                        color={data.user.color}
+                        accessibilityLabel="Click here to edit a user's information"
+                        onPress={() => this.setState({ editable: true })}
+                        title="Edit User"
+                      />
+                    )}
                   </View>
                   <View style={styles.details}>
-                    <Text>Email: {data.user.email}</Text>
+                    {editable ? (
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'center',
+                          alignItems: 'center'
+                        }}
+                      >
+                        <Text style={{ fontWeight: '900' }}>Email: </Text>
+                        <TextInput
+                          style={styles.input}
+                          onChangeText={text => {
+                            this.setState({ email: text });
+                          }}
+                          defaultValue={email}
+                        />
+                      </View>
+                    ) : (
+                      <Text>Email: {data.user.email}</Text>
+                    )}
                     <Text
                       style={[
                         styles.headers,

@@ -9,18 +9,21 @@ export default async function User(root, { user }, { ctx }, info) {
 
   // todo: 2 why is this update overwriting existing user data? Need to fix this so that just data input is
   // updated rather than overwritting all the data.
+  try {
+    const dir = path.join(__dirname, '../../../../data/users');
+    const files = fs.readdirSync(dir);
+    const userIdValid = files.map(
+      filename => user.id === filename.replace('.json', '')
+    );
 
-  const dir = path.join(__dirname, '../../../../data/users');
-  const files = fs.readdirSync(dir);
-  const userIdValid = files.map(
-    filename => user.id === filename.replace('.json', '')
-  );
+    if (userIdValid.includes(true)) {
+      await setUser(user);
+    } else {
+      throw new Error('User does not exist. Please enter a valid user.');
+    }
 
-  if (userIdValid.includes(true)) {
-    await setUser(user);
-  } else {
-    throw Error('User does not exist. Please enter a valid user.');
+    return true;
+  } catch (err) {
+    throw new Error('Unable to update user. Please try again!');
   }
-
-  return true;
 }
