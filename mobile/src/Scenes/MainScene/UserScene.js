@@ -226,7 +226,7 @@ export default class UserScene extends PureComponent {
                         accessibilityLabel="Click here to go to user's company"
                         onPress={() =>
                           navigation.navigate('CompanyScene', {
-                            id: data.user.company
+                            id: data.user.company.id
                           })
                         }
                         title="View Company Page"
