@@ -65,9 +65,27 @@ const styles = StyleSheet.create({
 const query = gql`
   query Company($id: ID!) {
     company(id: $id) {
+      id
       name
       color
       image
+      catchPhrase
+      address {
+        zipCode
+        city
+        cityPrefix
+        citySuffix
+        streetName
+        streetAddress
+        streetSuffix
+        streetPrefix
+        secondaryAddress
+        county
+        country
+        state
+        latitude
+        longitude
+      }
       employees {
         id
         name
@@ -111,43 +129,73 @@ export default class CompanyScene extends PureComponent {
                       />
                     </View>
                   </View>
-                  <Text
-                    style={[
-                      styles.headers,
-                      {
-                        backgroundColor: data.company.color
-                      }
-                    ]}
-                  >
-                    Employees
-                  </Text>
-                  {data.company.employees.length > 0 ? (
-                    data.company.employees.map(employee => (
-                      <TouchableOpacity
-                        key={employee.id}
-                        onPress={() =>
-                          navigation.navigate('UserScene', {
-                            id: employee.id
-                          })
+                  <View style={styles.details}>
+                    <Text
+                      style={[
+                        styles.headers,
+                        {
+                          backgroundColor: data.company.color
                         }
-                      >
-                        <View style={styles.friendsContainer}>
-                          <View>
-                            <Image
-                              style={[
-                                styles.display,
-                                { width: 50, height: 50 }
-                              ]}
-                              source={{ uri: employee.image }}
-                            />
+                      ]}
+                    >
+                      Address
+                    </Text>
+                    <Text>
+                      {`${data.company.address.streetAddress} ${
+                        data.company.address.streetName
+                      }`}
+                    </Text>
+                    <Text>
+                      {`${data.company.address.city}, ${
+                        data.company.address.county
+                      }`}
+                    </Text>
+                    <Text>{`${data.company.address.state}, ${
+                      data.company.address.country
+                    }`}</Text>
+                    <Text>{data.company.address.zipCode}</Text>
+                    <Text>Longitude: {data.company.address.longitude}</Text>
+                    <Text>Latitude: {data.company.address.latitude}</Text>
+                  </View>
+                  <View style={{ marginBottom: 20 }}>
+                    <Text
+                      style={[
+                        styles.headers,
+                        {
+                          backgroundColor: data.company.color
+                        }
+                      ]}
+                    >
+                      Employees
+                    </Text>
+                    {data.company.employees.length > 0 ? (
+                      data.company.employees.map(employee => (
+                        <TouchableOpacity
+                          key={employee.id}
+                          onPress={() =>
+                            navigation.navigate('UserScene', {
+                              id: employee.id
+                            })
+                          }
+                        >
+                          <View style={styles.friendsContainer}>
+                            <View>
+                              <Image
+                                style={[
+                                  styles.display,
+                                  { width: 50, height: 50 }
+                                ]}
+                                source={{ uri: employee.image }}
+                              />
+                            </View>
+                            <Text>{employee.name}</Text>
                           </View>
-                          <Text>{employee.name}</Text>
-                        </View>
-                      </TouchableOpacity>
-                    ))
-                  ) : (
-                    <Text style={{ textAlign: 'center' }}>No Employees</Text>
-                  )}
+                        </TouchableOpacity>
+                      ))
+                    ) : (
+                      <Text style={{ textAlign: 'center' }}>No Employees</Text>
+                    )}
+                  </View>
                 </ScrollView>
               </View>
             );

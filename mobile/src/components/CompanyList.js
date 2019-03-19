@@ -26,21 +26,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   textName: {
-    fontSize: 24
-    // flexWrap: 'wrap'
+    fontSize: 24,
+    fontWeight: '900'
   },
-  textEmail: {
+  textCatchPhrase: {
     fontSize: 18
   }
 });
 
-export default ({ company }) => (
+export default memo(({ company }) => (
   <View style={styles.companyContainer}>
     <View style={[styles.imageWrapper, { borderColor: company.color }]}>
-      <Image style={[styles.image]} source={{ uri: company.image }} />
+      <Image style={styles.image} source={{ uri: company.image }} />
     </View>
     <View style={styles.text}>
       <Text style={styles.textName}>{company.name}</Text>
+      <Text style={styles.textCatchPhrase}>{company.catchPhrase}</Text>
     </View>
   </View>
-);
+));

@@ -25,7 +25,8 @@ const styles = StyleSheet.create({
     flexDirection: 'column'
   },
   textName: {
-    fontSize: 24
+    fontSize: 24,
+    fontWeight: '900'
   },
   textEmail: {
     fontSize: 18

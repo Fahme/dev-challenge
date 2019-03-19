@@ -29,9 +29,10 @@ const query = gql`
   query Companies {
     companies {
       id
+      name
       color
       image
-      name
+      catchPhrase
     }
   }
 `;

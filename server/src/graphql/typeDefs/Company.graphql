@@ -26,5 +26,9 @@ type Company {
   color: Color
   image: String!
   name: String!
+  suffice: String!
+  catchPhrase: String!
+  bs: String!
+  address: Address
   employees: [User!]
 }
