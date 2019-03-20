@@ -11,7 +11,7 @@ import {
   TextInput
 } from 'react-native';
 
-import { Query } from 'react-apollo';
+import { Query, Mutation, withApollo } from 'react-apollo';
 import { gql } from 'apollo-boost';
 import { ErrorScene } from '../../components';
 
@@ -22,12 +22,19 @@ const styles = StyleSheet.create({
   headerContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    paddingBottom: 15
   },
   header: {
     marginTop: 20,
     marginBottom: 20,
     fontSize: 30,
+    color: '#FFF'
+  },
+  updateHeader: {
+    marginTop: 10,
+    marginBottom: 10,
+    fontSize: 20,
     color: '#FFF'
   },
   displayContainer: {
@@ -103,55 +110,28 @@ const query = gql`
   }
 `;
 
-export default class UserScene extends PureComponent {
-  static getDerivedStateFromProps(props, state) {
-    console.log('props: ', props);
-    console.log(state);
-    const {
-      navigation: {
-        state: {
-          params: { name, email }
-        }
-      }
-    } = props;
-
-    if (name !== state.name) {
-      return {
-        name
-      };
-    }
-
-    if (email !== state.email) {
-      return {
-        email
-      };
-    }
-
-    return state;
+const mutation = gql`
+  mutation UpdateUser($user: UserInput!) {
+    updateUser(user: $user)
   }
-
+`;
+class UserScene extends PureComponent {
   state = {
     editable: false,
-    name: null,
-    email: null
+    name: '',
+    email: ''
   };
 
-  // componentDidMount() {
-  //   console.log(this.props);
-  //   const {
-  //     navigation: {
-  //       state: { name, email }
-  //     }
-  //   } = this.props;
-
-  //   this.setState({ name, email });
-  // }
-
   render() {
-    debugger;
-    const { editable, name, email } = this.state;
+    let { editable, name, email } = this.state;
     const { navigation } = this.props;
     const id = navigation.getParam('id');
+    const initialName = navigation.getParam('name');
+    const initialEmail = navigation.getParam('email');
+
+    name = name.trim() ? name : initialName;
+    email = email.trim() ? email : initialEmail;
+    const user = { id, name, email };
     console.log(name, email, editable);
 
     // todo: 2. would be cool if we actually displayed full user data that is contained in the user data object.
@@ -182,15 +162,38 @@ export default class UserScene extends PureComponent {
                     ]}
                   >
                     {editable ? (
-                      <TextInput
-                        style={[
-                          styles.input,
-                          styles.header,
-                          { color: data.user.color }
-                        ]}
-                        defaultValue={name}
-                        onChangeText={text => this.setState({ name: text })}
-                      />
+                      <View
+                        style={{
+                          justifyContent: 'center',
+                          alignItems: 'center'
+                        }}
+                      >
+                        <Text style={[styles.header]}>{data.user.name}</Text>
+                        <View
+                          style={{
+                            borderWidth: 3,
+                            borderColor: '#000',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            padding: 20,
+                            marginBottom: 15
+                          }}
+                        >
+                          <Text style={[styles.updateHeader]}>
+                            Update Name:
+                          </Text>
+                          <TextInput
+                            style={[
+                              styles.input,
+                              styles.header,
+                              { color: data.user.color }
+                            ]}
+                            value={name}
+                            onChangeText={text => this.setState({ name: text })}
+                            placeholder="Update name"
+                          />
+                        </View>
+                      </View>
                     ) : (
                       <Text style={[styles.header]}>{data.user.name}</Text>
                     )}
@@ -201,16 +204,26 @@ export default class UserScene extends PureComponent {
                       />
                     </View>
                     {editable ? (
-                      <Button
-                        style={{ width: 200 }}
-                        color={data.user.color}
-                        accessibilityLabel="Click here to update a user's information"
-                        onPress={() => this.setState({ editable: false })}
-                        title="Update User"
-                      />
+                      <Mutation mutation={mutation} variables={{ user }}>
+                        {mutation => (
+                          <Button
+                            style={{
+                              width: 200
+                            }}
+                            color="#000"
+                            accessibilityLabel="Click here to update a user's information"
+                            onPress={() => {
+                              this.setState({ editable: false }, () => {
+                                mutation();
+                              });
+                            }}
+                            title="Update User"
+                          />
+                        )}
+                      </Mutation>
                     ) : (
                       <Button
-                        style={{ width: 200 }}
+                        style={{ width: 200, backgroundColor: '#d3d3d3' }}
                         color={data.user.color}
                         accessibilityLabel="Click here to edit a user's information"
                         onPress={() => this.setState({ editable: true })}
@@ -222,19 +235,33 @@ export default class UserScene extends PureComponent {
                     {editable ? (
                       <View
                         style={{
-                          flexDirection: 'row',
                           justifyContent: 'center',
                           alignItems: 'center'
                         }}
                       >
-                        <Text style={{ fontWeight: '900' }}>Email: </Text>
-                        <TextInput
-                          style={styles.input}
-                          onChangeText={text => {
-                            this.setState({ email: text });
+                        <Text>Email: {data.user.email}</Text>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            marginTop: 15,
+                            borderWidth: 3,
+                            borderColor: '#000',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            padding: 20
                           }}
-                          defaultValue={email}
-                        />
+                        >
+                          <Text style={{ fontWeight: '900' }}>Email: </Text>
+                          <TextInput
+                            placeholder="Update email"
+                            style={styles.input}
+                            ref={input => (this.email = input)}
+                            onChangeText={email => {
+                              this.setState({ email: email });
+                            }}
+                            value={email}
+                          />
+                        </View>
                       </View>
                     ) : (
                       <Text>Email: {data.user.email}</Text>
@@ -345,3 +372,5 @@ export default class UserScene extends PureComponent {
     );
   }
 }
+
+export default withApollo(UserScene);
